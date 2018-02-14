@@ -1,20 +1,24 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace XUnitTest
 {
     public class LoggingClass
     {
-        public static Action<string> StaticLogAction;
+        //public static ConcurrentDictionary<int, Action<string>> LogActions = new ConcurrentDictionary<int, Action<string>>();
+        [ThreadStatic]
+        public static Action<string> LogAction;
 
         private readonly Action<string> _logAction;
         public LoggingClass(Action<string> injectedLogAction = null)
         {
-            Action<string> notNullLogaction = injectedLogAction ?? StaticLogAction ?? (Action<string>)(message => Trace.WriteLine(message));
+            Action<string> notNullLogaction = injectedLogAction ?? /*LogActions[Thread.CurrentThread.ManagedThreadId]*/ LogAction ?? (Action<string>)(message => Trace.WriteLine(message));
             _logAction = message => notNullLogaction($"{DateTime.Now.ToString().PadRight(15)}: {message}");
         }
 

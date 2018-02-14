@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
@@ -7,8 +10,21 @@ namespace XUnitTest
 {
     public class SomeOtherNormalTests : TestBase
     {
-        public SomeOtherNormalTests(ITestOutputHelper output) : base(output.WriteLine)
+        public SomeOtherNormalTests(ITestOutputHelper output) : base(m =>
         {
+            try
+            {
+                output.WriteLine($"[{output.GetHashCode()}][{Thread.CurrentThread.ManagedThreadId}]: {m}");
+                Trace.WriteLine($"[{output.GetHashCode()}][{Thread.CurrentThread.ManagedThreadId}]: {m}");
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"Could not write to ouput helper: [{output.GetHashCode()}][{Thread.CurrentThread.ManagedThreadId}]. Message: {m}. Exception {e}.");
+                throw;
+            }
+        })
+        {
+            output.WriteLine($"[{output.GetHashCode()}][{Thread.CurrentThread.ManagedThreadId}]: Start new test");
         }
 
         [Fact]

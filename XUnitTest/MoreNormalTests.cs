@@ -1,8 +1,10 @@
 ﻿using FluentAssertions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -11,8 +13,21 @@ namespace XUnitTest
 {
     public class MoreNormalTests : TestBase
     {
-        public MoreNormalTests(ITestOutputHelper output) : base(output.WriteLine)
+        public MoreNormalTests(ITestOutputHelper output) : base(m =>
         {
+            try
+            {
+                output.WriteLine($"[{output.GetHashCode()}][{Thread.CurrentThread.ManagedThreadId}]: {m}");
+                Trace.WriteLine($"[{output.GetHashCode()}][{Thread.CurrentThread.ManagedThreadId}]: {m}");
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine($"Could not write to ouput helper: [{output.GetHashCode()}][{Thread.CurrentThread.ManagedThreadId}]. Message: {m}. Exception {e}.");
+                throw;
+            }
+        })
+        {
+            output.WriteLine($"[{output.GetHashCode()}][{Thread.CurrentThread.ManagedThreadId}]: Start new test");
         }
 
         [Fact]
