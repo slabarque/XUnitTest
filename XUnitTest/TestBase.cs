@@ -25,7 +25,7 @@ namespace XUnitTest
             _minWaitTime = minWaitTime;
             _maxWaitTime = maxWaitTime;
             //LoggingClass.LogActions[Thread.CurrentThread.ManagedThreadId] = logAction;
-            LoggingClass.LogAction = logAction;
+            LoggingClass.LogAction.Value = logAction;
             _random = new Random(Convert.ToInt32(DateTime.Now.Ticks%Int32.MaxValue));
             //_helper = new LoggingClass();
         }
